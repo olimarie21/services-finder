@@ -1,31 +1,55 @@
+'use client'
 import Image from 'next/image'
 import DetailBlock from './components/DetailBlock'
+import { fetchData } from './utils/api'
+import { useEffect, useState } from 'react'
+import LocationDetails from './utils/LocationDetails'
 
 const locationDetail = {
-  facility: 'Tenth Avenue Church',
-  category: 'Adults (all genders)',
-  hours: 'N/A',
-  services: 'Shelter',
-  phone: '604-876-2181',
-  details: { meals: true, pets: false, carts: false },
-  coords: { lat: 49.262338305195684, lng: -123.10586046207774 }
+  programName: 'Washington Community Market',
+  organizationName: 'Portland Hotel Society (PHS)',
+  description:
+    'Low cost essential food and household supplies, Mon-Sat 9am-5pm. For info contact (604) 683-0073.',
+  neighborhood: 'Downtown',
+  hours: 'Mon. - Sat. | 9 a.m. - 5 p.m.',
+  cost: null,
+  phone: '604-683-0073',
+  email: null,
+  coords: { lat: 49.281418, lng: -123.100279 },
+  details: {
+    meals: false,
+    takeout: false,
+    delivery: false,
+    accessible: true,
+    hampers: true,
+    requiresReferral: false,
+    signup: false
+  }
 }
 
-interface LocationDetails {
-  facility: string
-  category: string
-  hours: string
-  services: Array<string>
-  address: string
-  phone: string
-  details: { meals: boolean; pets: boolean; carts: boolean }
-  coords: { lat: number; lng: number }
-}
 export default function Home() {
+  const [locations, setLocations] = useState<LocationDetails[] | null>(null)
+
+  useEffect(() => {
+    const getAndFormatData = async () => {
+      try {
+        const res = await fetchData()
+        setLocations(res.results)
+      } catch (err) {
+        console.log('error fetching data', err)
+      }
+    }
+
+    getAndFormatData()
+    console.log(locations)
+  })
+
   return (
     <main className='flex min-h-screen flex-col p-24'>
       <div className=' items-center justify-between font-mono text-sm lg:flex mb-2'>
-        <h1 className='font-sans text-2xl/8'>Services</h1>
+        <h1 className='font-sans text-2xl/8'>
+          Free and Low Cost Food Programs
+        </h1>
       </div>
       <DetailBlock details={locationDetail} />
     </main>
